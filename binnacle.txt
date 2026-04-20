@@ -1,34 +1,72 @@
-DATE: April 18th 2026
+================================================================
+PROJECT: Codex - Document Library Platform
+================================================================
+
+----------------------------------------------------------------
+DATE: April 18th, 2026
 AUTHOR: MiguelAGDev
-ACTIONS: Create Repositare and Install dependencies
+SESSION TIME: ~1.5 hours
+ACTIONS: Repository setup and dependencies installation
+----------------------------------------------------------------
 
+[~0:00 - 0:30] Repository Setup
+- Created GitHub repository: github.com/MiguelAGDev/codex
+  * Visibility: Public
+  * License: MIT
+  * .gitignore: Node
+- Initialized local git repo and connected to remote (origin/main)
+- Fixed branch mismatch: renamed master -> main
+- Configured git: core.autocrlf true (Windows line endings fix)
 
-Description: 
+[~0:30 - 1:00] Backend Dependencies (npm install)
+- express       — framework that handles routes and HTTP requests. This is the server.
+- mysql2        — driver that connects Node to MySQL databases.
+- bcryptjs      — encrypts passwords. Never stores passwords in plain text.
+- jsonwebtoken  — generates JWT tokens to maintain user session without storing anything on the server.
+- multer        — middleware that handles file uploads (PDFs).
+- cors          — allows frontend (port 5173) to communicate with backend (different port) without the browser blocking it.
+- dotenv        — lets you store sensitive variables (DB password, JWT secret) in a .env file without pushing them to GitHub.
 
-- BACKEND (npm install)
-	*express - framework that handles routes and http request. This is the server
-	* mysql2 - driver that connects Node to MySQL databases
-	*bcryptjs - encrypts passwords. It never store password in plain text
-	*jsonwebtoken - generates JWT tokens to mantein the user session without storing anything in the server
-	*multer - middleware that handles file uploads (PDFs)
-	*cors - allows frontend (port 5173) to communicate with the backend (distinct port) without the browser blocking
-	*dotenv - lets you store sensitive files (DB password, JWT secred) in a .env file whithout pushing them to GitHub
+[~1:00 - 1:30] Frontend Dependencies (npm install)
+- vite + react      — Vite is the modern bundler that replaces Create React App. Starts in milliseconds.
+- axios             — makes HTTP requests to the backend. Cleaner than native fetch.
+- react-router-dom  — handles frontend routes (/login, /home, /upload, etc.)
 
+[~1:30 - 1:30] Environment
+- XAMPP (already installed)
+  * Local development environment that includes Apache and MySQL.
+  * Used to run a MySQL database server locally without any cloud setup.
+  * Database managed through phpMyAdmin at http://localhost/phpmyadmin.
 
-- FRONTEND (npm install)
-	*vite + react - Vite is the moder bundler that replace Create React App. Start very fast.
-	*axios - makes HTTPS request to your backend. Cleaner than native fetch.
-	*react-router-dom - handles frontend routes (/login,/home,/upload)
-XAMPP (already installed):
-
-- XAMPP 
-	*a local development environment that includes Apache and MySQL. We use it to run a MySQL database server locally without any cloud setup. The database is managed visually through phpMyAdmin, accessible at http://localhost/phpmyadmin.
-
-- GITHUB 
-	*i create the repository and align in the correct branch (main)
-
-
-DATE: 20th April 2026
+----------------------------------------------------------------
+DATE: April 20th, 2026
 AUTHOR: MiguelAGDev
-ACTIONS:
+SESSION TIME: ~1.5 hours
+ACTIONS: Backend structure and server + database setup
+----------------------------------------------------------------
 
+[~0:00 - 0:30] Folder Structure (backend/src/)
+- config/       — centralizes database connection and environment variables. Avoids repeating connection code everywhere.
+- controllers/  — each controller handles one resource (users, documents). Contains the actual business logic.
+- middleware/   — functions that run before controllers, like verifying JWT tokens or handling file uploads with multer.
+- models/       — all SQL queries live here, separated from business logic.
+- routes/       — defines which controller handles which URL. Keeps routing clean and readable.
+
+[~0:30 - 1:00] Express Server (backend/index.js)
+- Loaded environment variables with dotenv.config()
+- Enabled CORS so frontend can communicate with the server
+- Enabled express.json() to read JSON from request bodies
+- Defined test endpoint GET / returning { message: 'Codex API running' }
+- Server starts on PORT defined in .env (default 3000)
+
+[~1:00 - 1:30] Database Connection (backend/src/config/db.js)
+- Used mysql2/promise for native async/await support
+- Created a connection pool instead of single connection (more efficient for multiple requests)
+- Exported pool for use across the entire application
+- Verified connection with SELECT 1 query on server start
+- First commit pushed: "FEAT: setup express server and database connection"
+
+================================================================
+TOTAL TIME INVESTED: ~3 hours
+REMAINING BUDGET: ~7-9 hours
+================================================================
