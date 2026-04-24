@@ -1,0 +1,103 @@
+================================================================
+PROJECT: Codex - Document Library Platform
+================================================================
+
+ARCHITECTURE: MVC (Model - View - Controller)
+================================================================
+
+WHAT IS MVC?
+----------------------------------------------------------------
+MVC is a design pattern that separates an application into three
+main layers. Each layer has one single responsibility. This makes
+the code cleaner, easier to maintain, and easier to scale.
+
+The three layers are:
+    - Model      — talks to the database
+    - View       — what the user sees (React frontend)
+    - Controller — the brain, connects Model and View
+
+
+HOW A REQUEST FLOWS THROUGH CODEX
+----------------------------------------------------------------
+
+    [User/Frontend]
+          |
+          | HTTP Request (e.g. POST /auth/login)
+          v
+    [Routes]
+          |
+          | Decides which controller handles this URL
+          v
+    [Middleware] (optional)
+          |
+          | Runs checks before the controller
+          | Examples: Is the user logged in? Is the file valid?
+          v
+    [Controller]
+          |
+          | Contains the business logic
+          | Validates input, makes decisions, calls the model
+          v
+    [Model]
+          |
+          | Executes the SQL query against the database
+          v
+    [Database]
+          |
+          | Returns raw data to the model
+          v
+    [Model]
+          |
+          | Returns the data to the controller
+          v
+    [Controller]
+          |
+          | Builds the HTTP response (JSON)
+          v
+    [User/Frontend]
+
+
+FOLDER STRUCTURE
+----------------------------------------------------------------
+
+backend/
+    index.js              — entry point, starts the server
+    src/
+        config/           — database connection, permissions config
+        models/           — SQL queries, one file per resource
+        controllers/      — business logic, one file per resource
+        middleware/       — functions that run before controllers
+        routes/           — URL definitions, connect to controllers
+
+frontend/
+    src/                  — React application (the View layer)
+
+
+RESOURCES IN CODEX
+----------------------------------------------------------------
+
+Each resource follows the same pattern across all layers:
+
+    Resource        Model               Controller
+    --------        -----               ----------
+    Auth            userModel.js        authController.js
+    Users           userModel.js        userController.js
+    Documents       documentModel.js    documentController.js
+    Comments        commentModel.js     commentController.js
+    Favorites       favoriteModel.js    favoriteController.js
+
+
+HTTP STATUS CODES USED IN CODEX
+----------------------------------------------------------------
+
+    200 — OK                  Request succeeded
+    201 — Created             New resource was created
+    400 — Bad Request         Missing or invalid input
+    401 — Unauthorized        Not logged in or wrong credentials
+    403 — Forbidden           Logged in but not enough permissions
+    404 — Not Found           Resource does not exist
+    409 — Conflict            Resource already exists
+    500 — Internal Error      Something unexpected broke
+
+
+================================================================
