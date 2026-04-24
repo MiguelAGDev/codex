@@ -1,0 +1,142 @@
+================================================================
+PROJECT: Codex - Document Library Platform
+================================================================
+
+LAYER: Middleware
+================================================================
+
+WHAT IS MIDDLEWARE?
+----------------------------------------------------------------
+Middleware is a function that runs between the Route and the
+Controller. It intercepts the request before the controller
+sees it, runs a check or transformation, and then decides
+whether to let the request continue or block it.
+
+Think of it as a security checkpoint at an airport.
+The passenger (request) must pass the checkpoint (middleware)
+before boarding the plane (controller).
+
+If the check passes:  the request moves forward
+If the check fails:   the request is rejected immediately
+
+
+RESPONSIBILITY
+----------------------------------------------------------------
+    - Verify JWT tokens (is the user logged in?)
+    - Check permissions (does the user have access?)
+    - Handle file uploads and validate file types
+    - Block invalid or unauthorized requests early
+    - Attach useful data to the request for the controller
+
+
+HOW MIDDLEWARE FITS IN THE FLOW
+----------------------------------------------------------------
+
+    [Route]
+          |
+          | Request arrives at the URL
+          v
+    [Middleware]
+          |
+          | Runs its check
+          |
+          |--- FAIL --→ Returns error response immediately
+          |             Controller never executes
+          |
+          |--- PASS --→ Calls next()
+          v
+    [Controller]
+          |
+          | Executes normally
+          v
+    [Model] → [Database]
+
+
+THE next() FUNCTION
+----------------------------------------------------------------
+Every middleware function receives three arguments:
+
+    (req, res, next)
+
+    req   — the incoming request
+    res   — the response tools
+    next  — a function that tells Express to move forward
+
+If the check passes, the middleware calls next() and the
+request continues to the controller.
+If the check fails, the middleware calls res.json() and
+returns an error. next() is never called, so the controller
+never runs.
+
+This is the fundamental mechanic of all middleware.
+
+
+HOW JWT VERIFICATION WORKS IN MIDDLEWARE
+----------------------------------------------------------------
+When a user logs in, Codex sends them a JWT token.
+For every protected route, the frontend sends that token back
+inside the request headers:
+
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
+
+The auth middleware:
+    1. Reads the token from the header
+    2. Verifies the signature using JWT_SECRET from .env
+    3. If valid:   attaches the decoded user data to req.user
+                   calls next() so the controller can run
+    4. If invalid: returns 401 Unauthorized immediately
+
+
+WHY ATTACH DATA TO req.user?
+----------------------------------------------------------------
+After the middleware verifies the token, it decodes the payload:
+    {
+        id:   1,
+        role: 2
+    }
+
+It attaches this to req.user so the controller can use it
+without decoding the token again.
+
+Example in a controller:
+    const userId = req.user.id
+    const userRole = req.user.role
+
+This is clean and avoids repeating verification logic
+in every single controller.
+
+
+HOW PERMISSION CHECKING WORKS
+----------------------------------------------------------------
+Some routes require not just being logged in, but having a
+specific permission (like UPLOAD or DELETE_ANY).
+
+A permission middleware receives the required permission,
+checks it against the user's role using bitwise AND (&),
+and either allows or blocks the request.
+
+How bitwise permission checking works:
+    User role value:        0x03F  (contributor)
+    Required permission:    0x004  (UPLOAD)
+
+    0x03F & 0x004 = 0x004  (not zero = has permission)
+    0x003 & 0x004 = 0x000  (zero = does not have permission)
+
+If the result is not zero, the user has the permission.
+If the result is zero, the user does not.
+
+
+FILES IN THIS FOLDER
+----------------------------------------------------------------
+
+    authMiddleware.js       — verifies JWT token on every
+                              protected route, attaches
+                              decoded user to req.user
+
+    uploadMiddleware.js     — handles PDF file uploads using
+                              multer, validates file type
+                              and size before saving to disk
+                              (to be created)
+
+
+================================================================

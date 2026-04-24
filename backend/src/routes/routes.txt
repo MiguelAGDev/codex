@@ -1,0 +1,165 @@
+================================================================
+PROJECT: Codex - Document Library Platform
+================================================================
+
+LAYER: Routes
+================================================================
+
+WHAT IS A ROUTE?
+----------------------------------------------------------------
+A Route is the entry point of every HTTP request. It maps a
+URL and an HTTP method to a specific controller function.
+
+When the frontend sends a request, the route is the first
+thing that receives it. It reads the URL, matches it to the
+correct controller, and forwards the request.
+
+Routes do not contain any logic.
+Routes do not talk to the database.
+They only define: "this URL calls this function."
+
+
+RESPONSIBILITY
+----------------------------------------------------------------
+    - Define which URLs the server accepts
+    - Define which HTTP method each URL uses
+    - Attach middleware to specific routes when needed
+    - Forward the request to the correct controller function
+
+
+HTTP METHODS
+----------------------------------------------------------------
+Every route uses one of these HTTP methods:
+
+    GET     — retrieve data, never modifies anything
+              Example: GET /documents → get all documents
+
+    POST    — create something new
+              Example: POST /auth/register → create a new user
+
+    PUT     — replace an existing resource completely
+              Example: PUT /users/:id → update full user profile
+
+    PATCH   — update part of an existing resource
+              Example: PATCH /documents/:id → update document title
+
+    DELETE  — remove a resource
+              Example: DELETE /documents/:id → delete a document
+
+
+URL PARAMETERS
+----------------------------------------------------------------
+Routes can have dynamic segments in the URL marked with a colon:
+
+    /users/:id
+    /documents/:id
+    /comments/:documentId
+
+The colon means that segment is a variable. Express captures
+it and makes it available in the controller via:
+
+    req.params.id
+    req.params.documentId
+
+Example:
+    Request:  GET /users/5
+    Captured: req.params.id = "5"
+
+
+HOW ROUTES FIT IN THE FLOW
+----------------------------------------------------------------
+
+    [Frontend]
+          |
+          | Sends HTTP request
+          | Example: POST /auth/login
+          v
+    [index.js]
+          |
+          | app.use('/auth', authRoutes)
+          | Recognizes the /auth prefix
+          v
+    [authRoutes.js]
+          |
+          | router.post('/login', authController.login)
+          | Matches the /login path and POST method
+          v
+    [Middleware] (if attached to this route)
+          v
+    [Controller function]
+
+
+HOW ROUTES ARE REGISTERED IN index.js
+----------------------------------------------------------------
+Each route file handles one resource. They are all registered
+in index.js using a prefix:
+
+    app.use('/auth',      authRoutes)
+    app.use('/users',     userRoutes)
+    app.use('/documents', documentRoutes)
+    app.use('/comments',  commentRoutes)
+    app.use('/favorites', favoriteRoutes)
+
+This means the full URL is prefix + route path:
+
+    authRoutes:  router.post('/login')
+    Full URL:    POST /auth/login
+
+    authRoutes:  router.post('/register')
+    Full URL:    POST /auth/register
+
+
+MIDDLEWARE ON SPECIFIC ROUTES
+----------------------------------------------------------------
+Middleware can be attached to individual routes, not just all
+routes globally. This is how protected routes work in Codex:
+
+    Without middleware (public route):
+    router.post('/login', authController.login)
+
+    With middleware (protected route):
+    router.get('/profile', verifyToken, userController.getProfile)
+
+    verifyToken runs first.
+    If it passes, userController.getProfile runs.
+    If it fails, the controller never runs.
+
+Multiple middleware can be chained on one route:
+    router.post('/upload', verifyToken, checkPermission, 
+                documentController.upload)
+
+
+FILES IN THIS FOLDER
+----------------------------------------------------------------
+
+    authRoutes.js           — public routes, no token required
+                              POST /auth/register
+                              POST /auth/login
+
+    userRoutes.js           — protected routes, token required
+                              GET  /users/profile
+                              PUT  /users/profile
+                              (to be created)
+
+    documentRoutes.js       — mixed, some public some protected
+                              GET    /documents
+                              GET    /documents/:id
+                              POST   /documents/upload
+                              PATCH  /documents/:id
+                              DELETE /documents/:id
+                              (to be created)
+
+    commentRoutes.js        — protected routes, token required
+                              GET    /comments/:documentId
+                              POST   /comments/:documentId
+                              DELETE /comments/:id
+                              (to be created)
+
+    favoriteRoutes.js       — protected routes, token required
+                              GET    /favorites
+                              POST   /favorites/:documentId
+                              DELETE /favorites/:documentId
+                              (to be created)
+
+
+================================================================

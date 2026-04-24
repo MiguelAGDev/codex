@@ -1,0 +1,123 @@
+================================================================
+PROJECT: Codex - Document Library Platform
+================================================================
+
+LAYER: Model
+================================================================
+
+WHAT IS A MODEL?
+----------------------------------------------------------------
+The Model is the layer responsible for all communication with
+the database. It contains only SQL queries — nothing else.
+
+No business logic lives here.
+No HTTP requests or responses live here.
+Just data in, data out.
+
+This separation is intentional. If the database structure changes,
+you only need to update the model. Nothing else breaks.
+
+
+RESPONSIBILITY
+----------------------------------------------------------------
+    - Execute SQL queries (SELECT, INSERT, UPDATE, DELETE)
+    - Receive raw data from the database
+    - Return that data to whoever called it (the controller)
+    - Never decide what to do with the data
+
+
+HOW THE MODEL FITS IN THE FLOW
+----------------------------------------------------------------
+
+    [Controller]
+          |
+          | Calls a model function with the needed data
+          | Example: findUserByEmail(email)
+          v
+    [Model]
+          |
+          | Builds and executes the SQL query safely
+          | Uses placeholders (?) to prevent SQL injection
+          v
+    [Database]
+          |
+          | Returns raw rows
+          v
+    [Model]
+          |
+          | Extracts and returns the relevant data
+          v
+    [Controller]
+
+
+WHAT IS SQL INJECTION?
+----------------------------------------------------------------
+SQL injection is an attack where a malicious user sends SQL code
+inside a form field to manipulate the database.
+
+Example of a dangerous query (NEVER do this):
+    'SELECT * FROM users WHERE email = ' + email
+
+If the user types:  ' OR '1'='1
+The query becomes:  SELECT * FROM users WHERE email = '' OR '1'='1'
+This would return every user in the database.
+
+The safe way — using placeholders:
+    pool.query('SELECT * FROM users WHERE email = ?', [email])
+
+The ? is replaced safely by mysql2, neutralizing any attack.
+
+
+WHAT IS A CONNECTION POOL?
+----------------------------------------------------------------
+A pool is a set of database connections kept open and ready to use.
+
+Instead of opening and closing a new connection for every request
+(which is slow), the pool reuses existing connections.
+
+Codex uses mysql2/promise which supports async/await natively,
+meaning the server never freezes while waiting for the database.
+
+
+ASYNC / AWAIT IN MODELS
+----------------------------------------------------------------
+Every model function is async because database queries take time.
+The server cannot freeze while waiting, so:
+
+    async  — marks a function as asynchronous
+    await  — pauses only that function until the database responds
+             the rest of the server keeps running normally
+
+
+DESTRUCTURING THE QUERY RESULT
+----------------------------------------------------------------
+pool.query() always returns an array of two elements:
+    [rows, fields]
+
+    rows   — the actual data from the database
+    fields — metadata about the columns (we rarely need this)
+
+So we always write:
+    const [rows] = await pool.query(...)
+
+To grab only the data we care about.
+
+
+FILES IN THIS FOLDER
+----------------------------------------------------------------
+
+    userModel.js        — queries related to users
+                          findUserByEmail(email)
+                          createUser(name, email, password, roleId)
+
+    documentModel.js    — queries related to documents
+                          (to be created)
+
+    commentModel.js     — queries related to comments
+                          (to be created)
+
+    favoriteModel.js    — queries related to favorites
+                          (to be created)
+
+
+================================================================

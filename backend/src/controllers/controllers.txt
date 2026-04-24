@@ -1,0 +1,146 @@
+================================================================
+PROJECT: Codex - Document Library Platform
+================================================================
+
+LAYER: Controller
+================================================================
+
+WHAT IS A CONTROLLER?
+----------------------------------------------------------------
+The Controller is the brain of the application. It sits between
+the Route and the Model, making all the decisions.
+
+When a request arrives, the controller:
+    1. Reads the data the user sent
+    2. Validates that the data is correct and complete
+    3. Calls the model to interact with the database
+    4. Decides what response to send back to the user
+
+No SQL queries live here.
+No direct database calls live here.
+Just logic and decisions.
+
+
+RESPONSIBILITY
+----------------------------------------------------------------
+    - Read data from the request (req.body, req.params, req.headers)
+    - Validate input (is it complete? is it the right format?)
+    - Call model functions to get or save data
+    - Handle errors gracefully
+    - Send an HTTP response back to the user (res.json)
+    - Check permissions when needed
+
+
+HOW THE CONTROLLER FITS IN THE FLOW
+----------------------------------------------------------------
+
+    [Route]
+          |
+          | Receives the HTTP request and forwards it
+          | Example: POST /auth/login → authController.login
+          v
+    [Middleware] (optional)
+          |
+          | Runs checks before the controller executes
+          v
+    [Controller]
+          |
+          | Reads and validates the request data
+          | Calls the appropriate model function
+          v
+    [Model]
+          |
+          | Executes SQL and returns data
+          v
+    [Controller]
+          |
+          | Builds and sends the HTTP response
+          v
+    [User/Frontend]
+
+
+REQ AND RES
+----------------------------------------------------------------
+Every controller function receives two arguments automatically
+provided by Express:
+
+    req  (request)  — everything the user sent to the server
+                      req.body     → JSON data in the request body
+                      req.params   → URL parameters (/users/:id)
+                      req.headers  → metadata like the JWT token
+
+    res  (response) — tools to send something back to the user
+                      res.status() → sets the HTTP status code
+                      res.json()   → sends a JSON response
+
+
+WHY WE ALWAYS RETURN AFTER SENDING A RESPONSE
+----------------------------------------------------------------
+Once res.json() is called, the response is sent. If the function
+keeps running and tries to send another response, Express throws
+an error: "Cannot set headers after they are sent."
+
+This is why every early exit looks like:
+    return res.status(400).json({ error: '...' })
+
+The return stops the function immediately after responding.
+
+
+WHAT IS A JWT TOKEN?
+----------------------------------------------------------------
+JWT stands for JSON Web Token. It is a secure string that stores
+information about the logged-in user.
+
+Structure (three parts separated by dots):
+    header.payload.signature
+
+    header     — type of token and algorithm used
+    payload    — the data stored inside (user id, role)
+    signature  — proves the token was not tampered with
+
+When a user logs in, Codex creates a token and sends it back.
+The frontend stores it and sends it with every future request.
+The server verifies it without needing to query the database
+on every single request.
+
+Example payload stored inside the token:
+    {
+        id:   1,
+        role: 2
+    }
+
+
+WHY WE RETURN THE SAME ERROR FOR WRONG EMAIL AND WRONG PASSWORD
+----------------------------------------------------------------
+In the login function, both cases return:
+    { error: 'Invalid credentials' }
+
+This is intentional. If we returned different messages like
+"email not found" or "wrong password", an attacker could use
+that information to figure out which emails are registered.
+
+Returning the same message for both cases reveals nothing.
+This practice is called security through obscurity on error messages.
+
+
+FILES IN THIS FOLDER
+----------------------------------------------------------------
+
+    authController.js       — handles register and login
+                              register(req, res)
+                              login(req, res)
+
+    userController.js       — handles user profile management
+                              (to be created)
+
+    documentController.js   — handles document upload and retrieval
+                              (to be created)
+
+    commentController.js    — handles comment creation and deletion
+                              (to be created)
+
+    favoriteController.js   — handles saving and removing favorites
+                              (to be created)
+
+
+================================================================
