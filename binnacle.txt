@@ -66,7 +66,50 @@ ACTIONS: Backend structure and server + database setup
 - Verified connection with SELECT 1 query on server start
 - First commit pushed: "FEAT: setup express server and database connection"
 
+----------------------------------------------------------------
+DATE: April 21st, 2026
+AUTHOR: MiguelAGDev
+SESSION TIME: ~1.5 hours
+ACTIONS: Permissions system and database schema design
+----------------------------------------------------------------
+
+[~0:00 - 0:30] Permissions Config (backend/src/config/permissions.js)
+- Designed bitwise permission system using powers of 2 (hex values)
+- Each permission occupies an independent bit — no collision possible
+- Permissions defined:
+  * LOGIN          = 0x001
+  * VIEW_DOCUMENTS = 0x002
+  * UPLOAD         = 0x004
+  * DOWNLOAD       = 0x008
+  * EDIT_OWN       = 0x010
+  * DELETE_OWN     = 0x020
+  * EDIT_ANY       = 0x040
+  * DELETE_ANY     = 0x080
+  * MANAGE_USERS   = 0x100
+- Roles defined using bitwise OR (|) to combine permissions:
+  * viewer      = 0x003 (LOGIN + VIEW_DOCUMENTS)
+  * contributor = 0x03F (LOGIN + VIEW + UPLOAD + DOWNLOAD + EDIT_OWN + DELETE_OWN)
+  * admin       = 0x1FF (all permissions)
+- module.exports makes PERMISSIONS and ROLES available across the entire backend
+
+[~0:30 - 1:30] Database Schema (database.sql)
+- Designed and written from scratch with naming convention: acronym_field
+- Tables created:
+  * roles       — stores role name and hex permissions value
+  * users       — stores user data, references roles via foreign key
+  * documents   — stores document metadata + counters (downloads, saves)
+                  actual PDF file goes to disk, not the database
+  * comments    — simple comments per document (no replies, no edits)
+  * favorites   — relationship table between users and documents
+- Notable decisions:
+  * doc_author DEFAULT 'Desconocido' — handles documents without known author
+  * doc_category DEFAULT 'General' — ensures every document has a category
+  * doc_update_at ON UPDATE CURRENT_TIMESTAMP — MySQL updates this automatically
+  * usr_updated_at ON UPDATE CURRENT_TIMESTAMP — tracks last user profile change
+  * VARCHAR(500) for comments — reasonable limit, this is not a forum
+- Default roles inserted: viewer (0x003), contributor (0x03F), admin (0x1FF)
+
 ================================================================
-TOTAL TIME INVESTED: ~3 hours
-REMAINING BUDGET: ~7-9 hours
+TOTAL TIME INVESTED: ~4.5 hours
+REMAINING BUDGET: ~5.5-7.5 hours
 ================================================================

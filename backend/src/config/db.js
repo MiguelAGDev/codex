@@ -2,8 +2,6 @@
 // Date: 2026-04-20
 // Description: This file sets up the database connection using mysql2 and dotenv. It creates a connection pool and exports it for use in other parts of the application.
 
-
-
 // Last Modified: 
 // Actions: 
 
