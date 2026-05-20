@@ -9,6 +9,7 @@
 // pool import the database connection
 const pool = require('../config/db');
 
+
 // Execute a SQL query to find a user by their email address. 
 // async menas the will wait for the databes to respond before continuing.
 const findUserByEmail = async (email) =>{
@@ -47,7 +48,30 @@ async (name, email, passwordHash, role) =>{
     return result.insertId;
 };
 
+// Execute a SQL query to retrieve a user by their ID
+const getUserById = async (userId) => {
+    const [rows] = await pool.query(
+        `SELECT usr_id, usr_name, usr_email, usr_rol_id, usr_created_at, usr_updated_at
+         FROM users
+         WHERE usr_id = ?`,
+        [userId]
+    );
+
+    return rows[0] || null;
+};
+
+// Execute a SQL query to update a user's name and email
+const updateUser = async (userId, name, email) => {
+    const [result] = await pool.query(
+        `UPDATE users
+         SET usr_name = ?, usr_email = ?, usr_updated_at = NOW()
+         WHERE usr_id = ?`,
+        [name, email, userId]
+    );
+
+    return result.affectedRows > 0;
+};
 
 // Makes both functions available to other files that requires
 // this model
-module.exports = {findUserByEmail, createUser};
+module.exports = {findUserByEmail, createUser, getUserById, updateUser};

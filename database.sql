@@ -7,8 +7,8 @@
 --              foreign key relationships and uniqueness constraints. 
 --              Also inserts initial roles with different permission levels.
 
--- Last Modified: 
--- Actions: 
+-- Last Modified: 2026-04-26
+-- Actions: Add 'doc_description' column
 
 CREATE DATABASE IF NOT EXISTS codex;
 
@@ -44,6 +44,7 @@ CREATE TABLE documents(
     doc_title VARCHAR(200) NOT NULL,
     doc_author VARCHAR(100) NOT NULL DEFAULT 'Desconocido',
     doc_category VARCHAR(100) NOT NULL DEFAULT 'General',
+--  doc_description TEXT NOT NULL DEFAULT '',
     doc_filename VARCHAR(255) NOT NULL,
     doc_upload_by INT NOT NULL,
     doc_downloads INT NOT NULL DEFAULT 0,
@@ -85,3 +86,8 @@ VALUES
 ('viewer', 0x003),
 ('contributor', 0x03F),
 ('admin', 0x1FF);
+
+
+-- Add 'doc_description' column
+ALTER TABLE documents
+ADD COLUMN doc_description TEXT NOT NULL DEFAULT '';

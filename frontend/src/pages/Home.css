@@ -1,0 +1,97 @@
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #F5F5F0;
+    min-height: 100vh;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.home-header h1 {
+    color: #1A1A1A;
+    font-size: 32px;
+    margin: 0;
+}
+
+.btn-upload {
+    padding: 12px 24px;
+    background: #1A1A1A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-upload:hover {
+    background: #333333;
+}
+
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.document-card {
+    background: #FFFFFF;
+    border: 1px solid #E8E2D9;
+    border-radius: 8px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.document-card:hover {
+    border-color: #C8C0B8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.document-card h3 {
+    color: #1A1A1A;
+    margin: 0 0 12px;
+    font-size: 18px;
+}
+
+.document-card .author {
+    color: #3D3D3D;
+    font-size: 14px;
+    margin: 0 0 8px;
+}
+
+.document-card .category {
+    color: #8A8A8A;
+    font-size: 12px;
+    margin: 0 0 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.document-card .stats {
+    display: flex;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #E8E2D9;
+}
+
+.document-card .downloads {
+    font-size: 12px;
+    color: #8A8A8A;
+}
+
+.error {
+    color: #8B0000;
+    text-align: center;
+}

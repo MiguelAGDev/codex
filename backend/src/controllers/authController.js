@@ -1,6 +1,6 @@
 // Author: Miguel Angel Avila Garcia
 // Date: 2026-04-23
-// Description: 
+// Description: This file defines the authentication controller for our Express application. It contains two main functions: register and login. The register function handles user registration by validating input, checking for existing users, hashing passwords, creating new users in the database, and generating JWT tokens. The login function handles user authentication by validating input, verifying user credentials, and generating JWT tokens for successful logins. Both functions return appropriate HTTP responses based on the outcome of the operations.
 
 // Last Modified: 
 // Actions: 

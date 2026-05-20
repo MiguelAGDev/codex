@@ -109,7 +109,70 @@ ACTIONS: Permissions system and database schema design
   * VARCHAR(500) for comments — reasonable limit, this is not a forum
 - Default roles inserted: viewer (0x003), contributor (0x03F), admin (0x1FF)
 
+----------------------------------------------------------------
+DATE: April 26th, 2026
+AUTHOR: MiguelAGDev
+SESSION TIME: ~3 hours
+ACTIONS: MVC documentation and authentication system
+----------------------------------------------------------------
+
+[~0:00 - 0:30] Architecture Documentation
+- Created ARCHITECTURE.txt in root
+  * Explains MVC pattern and request flow
+  * Documents folder structure and resources
+  * Lists HTTP status codes used in Codex
+- Created backend/src/models/MODELS.txt
+  * Explains model responsibility in MVC
+  * Documents SQL injection protection with placeholders
+  * Explains connection pool and async/await
+- Created backend/src/controllers/CONTROLLERS.txt
+  * Explains controller responsibility in MVC
+  * Documents req/res objects and JWT tokens
+  * Explains security through obscurity on error messages
+- Created backend/src/middleware/MIDDLEWARE.txt
+  * Explains middleware responsibility and next()
+  * Documents JWT verification flow
+  * Explains bitwise permission checking
+- Created backend/src/routes/ROUTES.txt
+  * Explains HTTP methods and URL parameters
+  * Documents route registration in index.js
+  * Explains middleware chaining on specific routes
+
+[~0:30 - 2:00] Authentication System
+- Created backend/src/models/userModel.js
+  * findUserByEmail() — finds user by email using parameterized query
+  * createUser() — inserts new user, returns insertId
+
+- Created backend/src/controllers/authController.js
+  * register() — validates input, hashes password, returns JWT
+  * login() — validates credentials, compares hash, returns JWT
+
+- Created backend/src/middleware/authMiddleware.js
+  * verifyToken() — validates JWT from Authorization header
+  * checkPermission() — bitwise permission check against user role
+
+- Created backend/src/routes/authRoutes.js
+  * POST /auth/register — public route
+  * POST /auth/login    — public route
+
+- Updated backend/index.js
+  * registered auth routes under /auth prefix
+
+[~2:00 - 3:00] Debugging and Testing
+- Fixed dotenv path issue when running from root folder
+- Fixed authController bugs:
+  * missing roleId argument in createUser()
+  * wrong variable name UserId → newUserId
+  * comma instead of dot in bcrypt.compare()
+  * missing 'h' in expiresIn: '24' → '24h'
+- Fixed authRoutes import — removed incorrect .default
+- Fixed column name usr_role → usr_rol_id in userModel
+- Tested POST /auth/register — returns 409 if email exists  ✅
+- Tested POST /auth/login    — returns JWT token            ✅
+- Committed: "FEAT: implement authentication - model,
+  controller, middleware and routes"
+
 ================================================================
-TOTAL TIME INVESTED: ~4.5 hours
-REMAINING BUDGET: ~5.5-7.5 hours
+TOTAL TIME INVESTED: ~7.5 hours
+REMAINING BUDGET: ~2.5-4.5 hours
 ================================================================

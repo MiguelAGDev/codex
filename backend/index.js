@@ -11,6 +11,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 
 
@@ -19,6 +20,10 @@ dotenv.config({path: './backend/.env'});
 
 const db = require('./src/config/db'); // Import the database connection (not used in this snippet but will be needed for queries). 
 const authRoutes = require('./src/routes/authRoutes'); // Import the authentication routes
+const documentRoutes = require('./src/routes/documentRoutes');
+const commentRoutes = require('./src/routes/commentRoutes');
+const favoriteRoutes = require('./src/routes/favoriteRoutes');
+const userRoutes = require('./src/routes/userRoutes');
 
 db.query('SELECT 1')
     .then(() => console.log('Database connected'))
@@ -41,6 +46,15 @@ app.get('/', (req, res) => {
 // router.post('/register')  →  full URL: POST /auth/register
 // router.post('/login')     →  full URL: POST /auth/login
 app.use('/auth', authRoutes);
+
+// Register additional routes
+app.use('/documents', documentRoutes);
+app.use('/comments', commentRoutes);
+app.use('/favorites', favoriteRoutes);
+app.use('/users', userRoutes);
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const PORT  = process.env.PORT;
 

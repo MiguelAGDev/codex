@@ -1,6 +1,6 @@
 // Author: Miguel Angel Avila Garcia
 // Date: 2026-04-23
-// Description: 
+// Description: This file defines two middleware functions for authentication and authorization in an Express application. The verifyToken function checks for a valid JWT token in the Authorization header of incoming requests, while the checkPermissions function checks if the authenticated user has the required permissions to access a specific route. These middleware functions can be used to protect routes and ensure that only authorized users can access certain resources or perform specific actions.
 
 // Last Modified: 
 // Actions: 
@@ -56,7 +56,7 @@ const checkPermissions = (requiredPermission) => {
         if((userRole & requiredPermission) == 0){
 
             // If the user does not have the required permission, return a 403 Forbidden response            
-            return res.status(403).json({error: 'Acces denied'}); 
+            return res.status(403).json({error: 'Access denied'}); 
 
         };
 

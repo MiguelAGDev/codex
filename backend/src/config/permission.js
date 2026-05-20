@@ -21,7 +21,8 @@ const PERMISSIONS = {
 const ROLES = {
 
     VIEWER: PERMISSIONS.LOGIN | PERMISSIONS.VIEW_DOCUMENTS | PERMISSIONS.DOWNLOAD, // Can log in, view and download documents
-    CONTRIBUTOR: PERMISSIONS.LOGIN | PERMISSIONS.VIEW_DOCUMENTS | PERMISSIONS.DOWNLOAD | PERMISSIONS.UPLOAD | PERMISSIONS.EDIT_OWN | PERMISSIONS.DELETE_OWN, // Can do everything a viewer can, plus upload and manage their own documents
+    CONTRIBUTOR: PERMISSIONS.LOGIN | PERMISSIONS.VIEW_DOCUMENTS | PERMISSIONS.DOWNLOAD 
+                | PERMISSIONS.UPLOAD | PERMISSIONS.EDIT_OWN | PERMISSIONS.DELETE_OWN, // Can do everything a viewer can, plus upload and manage their own documents
     ADMIN: 0x1FF // Can do everything
 
 };
